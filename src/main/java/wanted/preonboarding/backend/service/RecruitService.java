@@ -16,6 +16,11 @@ public class RecruitService {
     private final RecruitRepository recruitRepository;
     private final CompanyRepository companyRepository;
 
+    public RecruitPosting getRecruitPosting(Long postId){
+        return recruitRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("등록된 공고가 없습니다."));
+    }
+
     @Transactional
     public void createPosting(RecruitPostingDto recruitPostingDto){
         Company company = companyRepository.findById(recruitPostingDto.getCompanyId())
@@ -31,4 +36,12 @@ public class RecruitService {
         recruitRepository.save(recruitPosting);
     }
 
+    @Transactional
+    public void updatePosting(Long postId, RecruitPostingDto recruitPostingDto){
+        RecruitPosting recruitPosting = getRecruitPosting(postId);
+        recruitPosting.setPosition(recruitPostingDto.getPosition());
+        recruitPosting.setReward(recruitPostingDto.getReward());
+        recruitPosting.setContents(recruitPostingDto.getContents());
+        recruitPosting.setSkill(recruitPostingDto.getSkill());
+    }
 }
