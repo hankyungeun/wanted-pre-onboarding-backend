@@ -44,4 +44,10 @@ public class RecruitService {
         recruitPosting.setContents(recruitPostingDto.getContents());
         recruitPosting.setSkill(recruitPostingDto.getSkill());
     }
+
+    @Transactional
+    public void deletePosting(Long postId){
+        RecruitPosting recruitPosting = getRecruitPosting(postId);
+        recruitRepository.delete(recruitPosting);
+    }
 }
