@@ -1,6 +1,8 @@
 package wanted.preonboarding.backend.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
 
@@ -8,7 +10,8 @@ import lombok.Data;
 @Data
 public class Company {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
     private String name;
     private String country;
     private String region;
