@@ -27,4 +27,10 @@ public class RecruitController {
         recruitService.updatePosting(postId, recruitPostingDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "내용을 성공적으로 수정했습니다."));
     }
+    
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Map<String,String>> deletePosting(@PathVariable Long postId){
+        recruitService.deletePosting(postId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "내용을 성공적으로 삭제했습니다."));
+    }
 }
