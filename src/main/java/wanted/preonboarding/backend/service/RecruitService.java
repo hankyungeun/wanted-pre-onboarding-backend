@@ -4,11 +4,16 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wanted.preonboarding.backend.dto.PostListResponseDto;
 import wanted.preonboarding.backend.dto.RecruitPostingDto;
 import wanted.preonboarding.backend.entity.Company;
 import wanted.preonboarding.backend.entity.RecruitPosting;
 import wanted.preonboarding.backend.repository.CompanyRepository;
 import wanted.preonboarding.backend.repository.RecruitRepository;
+import wanted.preonboarding.backend.searcher.SearchBuilder;
+import wanted.preonboarding.backend.searcher.SearchOperationType;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +24,29 @@ public class RecruitService {
     public RecruitPosting getRecruitPosting(Long postId){
         return recruitRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("등록된 공고가 없습니다."));
+    }
+
+    public ArrayList<PostListResponseDto> getAllPosting(String keyword){
+        SearchBuilder<RecruitPosting> searchBuilder = SearchBuilder.builder();
+        if (keyword != null && !keyword.isEmpty()) {
+            searchBuilder.with("skill", SearchOperationType.CONTAINS, keyword, true);
+            searchBuilder.with("company.name", SearchOperationType.CONTAINS, keyword, true);
+        }
+
+        List<RecruitPosting> recruitPostings = recruitRepository.findAll(searchBuilder.build());
+        ArrayList<PostListResponseDto> postList = new ArrayList<>();
+        for (RecruitPosting post : recruitPostings) {
+            PostListResponseDto dto = new PostListResponseDto();
+            dto.setPostId(post.getId());
+            dto.setCompanyName(post.getCompany().getName());
+            dto.setNation(post.getCompany().getCountry());
+            dto.setRegion(post.getCompany().getRegion());
+            dto.setPosition(post.getPosition());
+            dto.setReward(post.getReward());
+            dto.setSkill(post.getSkill());
+            postList.add(dto);
+        }
+        return postList;
     }
 
     @Transactional
