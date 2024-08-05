@@ -15,6 +15,7 @@ import wanted.preonboarding.backend.searcher.SearchBuilder;
 import wanted.preonboarding.backend.searcher.SearchOperationType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +40,17 @@ public class RecruitService {
         postDetailDto.setReward(recruitPosting.getReward());
         postDetailDto.setSkill(recruitPosting.getSkill());
         postDetailDto.setContents(recruitPosting.getContents());
+
+        List<Long> otherRecruitPost = recruitRepository.findByCompanyId(recruitPosting.getCompany().getId())
+                .stream()
+                .filter(post -> !post.getId().equals(postId))
+                .map(RecruitPosting::getId)
+                .collect(Collectors.toList());
+        postDetailDto.setOtherRecruitPost(otherRecruitPost);
+
+        if (!otherRecruitPost.isEmpty()) {
+            postDetailDto.setOtherRecruitPost(otherRecruitPost);
+        }
 
         return postDetailDto;
     }
