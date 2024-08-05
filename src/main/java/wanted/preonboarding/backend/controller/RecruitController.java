@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wanted.preonboarding.backend.dto.PostListResponseDto;
 import wanted.preonboarding.backend.dto.RecruitPostingDto;
-import wanted.preonboarding.backend.entity.RecruitPosting;
 import wanted.preonboarding.backend.service.RecruitService;
 
 import java.util.ArrayList;
@@ -18,8 +18,8 @@ public class RecruitController {
     private final RecruitService recruitService;
 
     @GetMapping
-    public ArrayList<RecruitPosting> getAllPosting(@RequestParam(name = "search", required = false)String keyword){
-        ArrayList<RecruitPosting> postingArrayList = recruitService.getAllPosting(keyword);
+    public ArrayList<PostListResponseDto> getAllPosting(@RequestParam(name = "search", required = false)String keyword){
+        ArrayList<PostListResponseDto> postingArrayList = recruitService.getAllPosting(keyword);
         return postingArrayList;
     }
     @PostMapping
@@ -27,7 +27,6 @@ public class RecruitController {
         recruitService.createPosting(recruitPostingDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "공고를 성공적으로 등록했습니다."));
     }
-
     @PutMapping("/{postId}")
     public ResponseEntity<Map<String,String>> updatePosting(@PathVariable Long postId,
                                                             @RequestBody RecruitPostingDto recruitPostingDto){
