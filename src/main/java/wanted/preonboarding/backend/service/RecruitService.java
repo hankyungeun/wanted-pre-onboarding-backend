@@ -9,6 +9,7 @@ import wanted.preonboarding.backend.entity.Company;
 import wanted.preonboarding.backend.entity.RecruitPosting;
 import wanted.preonboarding.backend.repository.CompanyRepository;
 import wanted.preonboarding.backend.repository.RecruitRepository;
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,10 @@ public class RecruitService {
     public RecruitPosting getRecruitPosting(Long postId){
         return recruitRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("등록된 공고가 없습니다."));
+    }
+
+    public ArrayList<RecruitPosting> getAllPosting(){
+        return new ArrayList<>(recruitRepository.findAll());
     }
 
     @Transactional

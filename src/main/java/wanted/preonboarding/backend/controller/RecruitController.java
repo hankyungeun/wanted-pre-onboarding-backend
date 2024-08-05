@@ -5,8 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wanted.preonboarding.backend.dto.RecruitPostingDto;
+import wanted.preonboarding.backend.entity.RecruitPosting;
 import wanted.preonboarding.backend.service.RecruitService;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 @RestController
@@ -14,6 +16,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RecruitController {
     private final RecruitService recruitService;
+
+    @GetMapping
+    public ArrayList<RecruitPosting> getAllPosting(){
+        ArrayList<RecruitPosting> postingArrayList = recruitService.getAllPosting();
+        return postingArrayList;
+    }
 
     @PostMapping
     public ResponseEntity<Map<String,String>> createPosting(@RequestBody RecruitPostingDto recruitPostingDto){
