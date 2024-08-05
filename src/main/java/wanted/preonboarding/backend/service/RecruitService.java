@@ -9,6 +9,8 @@ import wanted.preonboarding.backend.entity.Company;
 import wanted.preonboarding.backend.entity.RecruitPosting;
 import wanted.preonboarding.backend.repository.CompanyRepository;
 import wanted.preonboarding.backend.repository.RecruitRepository;
+import wanted.preonboarding.backend.searcher.SearchBuilder;
+import wanted.preonboarding.backend.searcher.SearchOperationType;
 import java.util.ArrayList;
 
 @Service
@@ -22,8 +24,13 @@ public class RecruitService {
                 .orElseThrow(() -> new EntityNotFoundException("등록된 공고가 없습니다."));
     }
 
-    public ArrayList<RecruitPosting> getAllPosting(){
-        return new ArrayList<>(recruitRepository.findAll());
+    public ArrayList<RecruitPosting> getAllPosting(String keyword){
+        SearchBuilder<RecruitPosting> searchBuilder = SearchBuilder.builder();
+        if (keyword != null && !keyword.isEmpty()) {
+            searchBuilder.with("skill", SearchOperationType.CONTAINS, keyword, true);
+            searchBuilder.with("company.name", SearchOperationType.CONTAINS, keyword, true);
+        }
+        return new ArrayList<>(recruitRepository.findAll(searchBuilder.build()));
     }
 
     @Transactional

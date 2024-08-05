@@ -18,11 +18,10 @@ public class RecruitController {
     private final RecruitService recruitService;
 
     @GetMapping
-    public ArrayList<RecruitPosting> getAllPosting(){
-        ArrayList<RecruitPosting> postingArrayList = recruitService.getAllPosting();
+    public ArrayList<RecruitPosting> getAllPosting(@RequestParam(name = "search", required = false)String keyword){
+        ArrayList<RecruitPosting> postingArrayList = recruitService.getAllPosting(keyword);
         return postingArrayList;
     }
-
     @PostMapping
     public ResponseEntity<Map<String,String>> createPosting(@RequestBody RecruitPostingDto recruitPostingDto){
         recruitService.createPosting(recruitPostingDto);

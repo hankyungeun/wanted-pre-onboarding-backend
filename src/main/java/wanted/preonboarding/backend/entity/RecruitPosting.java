@@ -8,7 +8,7 @@ import lombok.Data;
 public class RecruitPosting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @ManyToOne
     @JoinColumn(name="company_id")
     private Company company;
