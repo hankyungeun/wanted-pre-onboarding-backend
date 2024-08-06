@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wanted.preonboarding.backend.dto.PostDetailDto;
 import wanted.preonboarding.backend.dto.PostListResponseDto;
 import wanted.preonboarding.backend.dto.RecruitPostingDto;
 import wanted.preonboarding.backend.entity.Company;
@@ -14,6 +15,7 @@ import wanted.preonboarding.backend.searcher.SearchBuilder;
 import wanted.preonboarding.backend.searcher.SearchOperationType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +23,36 @@ public class RecruitService {
     private final RecruitRepository recruitRepository;
     private final CompanyRepository companyRepository;
 
-    public RecruitPosting getRecruitPosting(Long postId){
+    public RecruitPosting findPost(Long postId){
         return recruitRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("등록된 공고가 없습니다."));
+    }
+
+    public PostDetailDto getDetailPost(Long postId){
+        RecruitPosting recruitPosting = findPost(postId);
+
+        PostDetailDto postDetailDto = new PostDetailDto();
+        postDetailDto.setPostId(recruitPosting.getId());
+        postDetailDto.setCompanyName(recruitPosting.getCompany().getName());
+        postDetailDto.setNation(recruitPosting.getCompany().getCountry());
+        postDetailDto.setRegion(recruitPosting.getCompany().getRegion());
+        postDetailDto.setPosition(recruitPosting.getPosition());
+        postDetailDto.setReward(recruitPosting.getReward());
+        postDetailDto.setSkill(recruitPosting.getSkill());
+        postDetailDto.setContents(recruitPosting.getContents());
+
+        List<Long> otherRecruitPost = recruitRepository.findByCompanyId(recruitPosting.getCompany().getId())
+                .stream()
+                .filter(post -> !post.getId().equals(postId))
+                .map(RecruitPosting::getId)
+                .collect(Collectors.toList());
+        postDetailDto.setOtherRecruitPost(otherRecruitPost);
+
+        if (!otherRecruitPost.isEmpty()) {
+            postDetailDto.setOtherRecruitPost(otherRecruitPost);
+        }
+
+        return postDetailDto;
     }
 
     public ArrayList<PostListResponseDto> getAllPosting(String keyword){
@@ -66,7 +95,7 @@ public class RecruitService {
 
     @Transactional
     public void updatePosting(Long postId, RecruitPostingDto recruitPostingDto){
-        RecruitPosting recruitPosting = getRecruitPosting(postId);
+        RecruitPosting recruitPosting = findPost(postId);
         recruitPosting.setPosition(recruitPostingDto.getPosition());
         recruitPosting.setReward(recruitPostingDto.getReward());
         recruitPosting.setContents(recruitPostingDto.getContents());
@@ -75,7 +104,7 @@ public class RecruitService {
 
     @Transactional
     public void deletePosting(Long postId){
-        RecruitPosting recruitPosting = getRecruitPosting(postId);
+        RecruitPosting recruitPosting = findPost(postId);
         recruitRepository.delete(recruitPosting);
     }
 }
